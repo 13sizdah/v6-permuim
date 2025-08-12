@@ -1,45 +1,64 @@
 <?php
-include("../bot.php");
-$MerchantID = 'مریچنت';//مریچنت زرین پال را اینجا وارد کنید
+// Security headers
+header('X-Content-Type-Options: nosniff');
+header('X-Frame-Options: DENY');
+header('X-XSS-Protection: 1; mode=block');
+
+require_once("../confing.php");
+require_once("../includes/database_helpers.php");
+
+function vinput($value, $type) {
+    if (!isset($value)) return false;
+    $value = trim($value);
+    switch ($type) {
+        case 'int': return ctype_digit($value) && (int)$value > 0 ? (int)$value : false;
+        case 'authority': return preg_match('/^[A-Za-z0-9]{36}$/', $value) ? $value : false;
+        case 'status': return in_array($value, ['OK','NOK']) ? $value : false;
+        default: return $value;
+    }
+}
+
+$MerchantID = getSecureConfig('MERCHANT_ID', 'YOUR_ZARINPAL_MERCHANT_ID');
 $Amount = 10000;
-$Authority = $_GET['Authority'];
-$group = $_GET['gpid'];
-if ($_GET['Status'] == 'OK'){
-$client = new SoapClient('https://www.zarinpal.com/pg/services/WebGate/wsdl', ['encoding' => 'UTF-8']);
-$result = $client->PaymentVerification(
-[
-'MerchantID' => $MerchantID,
-'Authority' => $Authority,
-'Amount' => $Amount,
+$Authority = vinput($_GET['Authority'] ?? null, 'authority');
+$group = vinput($_GET['gpid'] ?? null, 'int');
+$status = vinput($_GET['Status'] ?? null, 'status');
 
-]
-);
+if (!$Authority || !$group || !$status) {
+    http_response_code(400);
+    echo file_get_contents("payment.html");
+    exit;
+}
 
-if ($result->Status == 100){
-echo file_get_contents("payComplete30.html");
-date_default_timezone_set('Asia/Tehran');
-		$gpFile = getGroupData($group);
-		$gpCharge = $gpFile["information"]["expire"] ?? date('Y-m-d');
-		$next_date = date('Y-m-d', strtotime($gpCharge ." +60 day"));
-		$settings = getGroupSettings($group);
-		setGroupSetting($group, "expire", $next_date);
-       sendMessage("$group","📍 پرداخت شما موفقیت امیز بود 
-🎉 میزان شارژ خریداری شد : 60 روز
-📌 شارژ گروه شما به میزان 60 روز افزایش یافت 
-از حمایت شما سپاسگزاریم 🙏
+if ($status === 'OK') {
+    try {
+        $client = new SoapClient('https://de.zarinpal.com/pg/services/WebGate/wsdl', ['encoding' => 'UTF-8']);
+        $result = $client->PaymentVerification([
+            'MerchantID' => $MerchantID,
+            'Authority' => $Authority,
+            'Amount' => $Amount,
+        ]);
 
-");
-sendMessage("$Dev[0]","📍 یک خرید انجام شد
-🎉 میزان شارژ خریداری شد : 60 روز 
-🎉مشخصات گروه :
-📍 ایدی گروه : [ $group ]
-");
-          
+        if ($result->Status == 100) {
+            date_default_timezone_set('Asia/Tehran');
+
+            // Determine starting point for expiry extension
+            $currentExpire = getGroupSetting($group, 'expire');
+            $baseTime = $currentExpire && strtotime($currentExpire) > time()
+                ? strtotime($currentExpire)
+                : time();
+            $next_date = date('Y-m-d', strtotime('+60 days', $baseTime));
+            setGroupSetting($group, 'expire', $next_date);
+
+            echo file_get_contents("payComplete30.html");
+        } else {
+            echo file_get_contents("paysend.html");
+        }
+    } catch (Exception $e) {
+        error_log('ZarinPal verify error: ' . $e->getMessage());
+        echo file_get_contents("paysend.html");
+    }
 } else {
-       echo file_get_contents("paysend.html");
-}
-}
-else{
-     echo file_get_contents("payment.html");
+    echo file_get_contents("payment.html");
 }
 ?>
