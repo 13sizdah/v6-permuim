@@ -745,7 +745,7 @@ elseif($textmassage=="/unlock audio" or $textmassage=="بازکردن اهنگ")
 
 
 if($textmassage == "/channel on" or $textmassage == "channel on" or $textmassage == "قفل کانال روشن"){
-if ($tc == 'group' | $tc == 'supergroup'){  
+if ($tc == 'group' || $tc == 'supergroup'){  
 if ( $status == 'creator' or $status == 'administrator' or in_array($from_id,$Dev)){
 $add = $settings["information"]["added"];
 if ($add == true) {
@@ -775,7 +775,7 @@ botevoobot('sendmessage',[
    }   
 }
 elseif($textmassage == "/channel off" or $textmassage == "channel off" or $textmassage == "قفل کانال خاموش"){
-if ($tc == 'group' | $tc == 'supergroup'){  
+if ($tc == 'group' || $tc == 'supergroup'){  
 if ( $status == 'creator' or $status == 'administrator' or in_array($from_id,$Dev)){
 $add = $settings["information"]["added"];
 if ($add == true) {

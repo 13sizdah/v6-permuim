@@ -21,7 +21,7 @@ ini_set('file_uploads', 'Off');
 ini_set('post_max_size', '1M');
 
 // Disable dangerous functions
-ini_set('disable_functions', 'exec,passthru,shell_exec,system,proc_open,popen,curl_exec,curl_multi_exec,parse_ini_file,show_source,eval,file,file_get_contents,file_put_contents,fclose,fopen,fwrite,mkdir,rmdir,unlink,glob,echo,die,exit,print,scandir');
+ini_set('disable_functions', 'exec,passthru,shell_exec,system,proc_open,popen,pcntl_exec,proc_terminate,proc_get_status,apache_child_terminate,apache_setenv,putenv,dl');
 
 // Timezone
 date_default_timezone_set('Asia/Tehran');
@@ -102,17 +102,17 @@ function secureFilePutContents($filename, $data) {
 }
 
 // Secure JSON operations
-function secureJsonDecode($json_string) {
-    if (empty($json_string)) {
+function secureJsonDecode($json_string, $assoc = false) {
+    if ($json_string === '' || $json_string === null) {
         return null;
     }
-    
-    $data = json_decode($json_string, true);
+
+    $data = json_decode($json_string, $assoc);
     if (json_last_error() !== JSON_ERROR_NONE) {
         error_log('JSON decode error: ' . json_last_error_msg());
         return null;
     }
-    
+
     return $data;
 }
 
@@ -166,17 +166,21 @@ $Dev = array("00000000","0000000000","0000000000"); // آیدی مدیر
 @$freedays = secureFileGetContents('data/fredays.txt') ?: '';
 
 //-----------------------------------------------------------------------------------------------
-// Secure input processing
-$raw_input = file_get_contents('php://input');
-if (empty($raw_input)) {
-    exit('No input received');
-}
+// Secure input processing (only when running via bot webhook entry: bot.php)
+if (isset($_SERVER['SCRIPT_FILENAME']) && strtolower(basename($_SERVER['SCRIPT_FILENAME'])) === 'bot.php') {
+    $raw_input = file_get_contents('php://input');
+    if ($raw_input === '' || $raw_input === false) {
+        exit('No input received');
+    }
 
-$update = secureJsonDecode($raw_input);
-if ($update === null) {
-    exit('Invalid JSON input');
+    $update = secureJsonDecode($raw_input);
+    if ($update === null) {
+        exit('Invalid JSON input');
+    }
+} else {
+    $update = null;
 }
-
+//-------------------------------------------------------------------------
 // Validate and sanitize input
 @$message = $update->message ?? null;
 @$from_id = isset($message->from->id) ? validateInput($message->from->id, 'user_id') : null;
@@ -236,7 +240,7 @@ function getChatMemberStatus($chat_id, $user_id) {
     }
     
     $data = secureJsonDecode($response);
-    return $data['result']['status'] ?? null;
+    return $data->result->status ?? null;
 }
 
 @$status = getChatMemberStatus($chat_id, $from_id);
@@ -266,10 +270,10 @@ function getChannelMemberStatus($channel, $user_id) {
 
 //-----------------------------------------------------------------------------------------
 // Secure settings loading
-@$settings = secureJsonDecode(secureFileGetContents("data/$chat_id.json")) ?: array();
-@$settings2 = secureJsonDecode(secureFileGetContents("data/$chatid.json")) ?: array();
-@$editgetsettings = secureJsonDecode(secureFileGetContents("data/$chat_edit_id.json")) ?: array();
-@$user = secureJsonDecode(secureFileGetContents("data/user.json")) ?: array();
+@$settings = secureJsonDecode(secureFileGetContents("data/$chat_id.json"), true) ?: array();
+@$settings2 = secureJsonDecode(secureFileGetContents("data/$chatid.json"), true) ?: array();
+@$editgetsettings = secureJsonDecode(secureFileGetContents("data/$chat_edit_id.json"), true) ?: array();
+@$user = secureJsonDecode(secureFileGetContents("data/user.json"), true) ?: array();
 @$filterget = $settings["filterlist"] ?? array();
 
 //=========================================================================

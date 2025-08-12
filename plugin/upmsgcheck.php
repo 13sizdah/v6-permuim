@@ -18,7 +18,7 @@ file_put_contents("data/$chat_id.json",$settings);
 }
 if($settings["information"]["add"] == "| فعال | ✅"){
 if ($status != "creator" && $status != "administrator" && !in_array($from_id,$Dev)){
-if ($tc == 'group' | $tc == 'supergroup'){
+if ($tc == 'group' || $tc == 'supergroup'){
 $youadding = $settings["addlist"]["$from_id"]["add"];
 $setadd = $settings["information"]["setadd"];
 $addtext = $settings["addlist"]["$from_id"]["addtext"];
@@ -90,7 +90,7 @@ file_put_contents("data/$chatid.json",$settings);
 //  game
 if($settings["lock"]["game"] == "| فعال | ✅"){
 if($update->message->game){
-if ($tc == 'group' | $tc == 'supergroup'){
+if ($tc == 'group' || $tc == 'supergroup'){
 if ( $status != 'creator' && $status != 'administrator' && !in_array($from_id,$Dev) ){
 	botevoobot('deletemessage',[
     'chat_id'=>$chat_id,
@@ -103,7 +103,7 @@ if ( $status != 'creator' && $status != 'administrator' && !in_array($from_id,$D
 // location
 if ($settings["lock"]["location"] == "| فعال | ✅"){
 if($update->message->location){
-if ($tc == 'group' | $tc == 'supergroup'){
+if ($tc == 'group' || $tc == 'supergroup'){
 if ( $status != 'creator' && $status != 'administrator' && !in_array($from_id,$Dev) ){
 	botevoobot('deletemessage',[
     'chat_id'=>$chat_id,
@@ -128,7 +128,7 @@ botevoobot('deletemessage',[
 // setrules
 if($settings["information"]["step"] == "setrules"){
 if ( $status == 'creator' or $status == 'administrator' or in_array($from_id,$Dev) ){
-if ($tc == 'group' | $tc == 'supergroup'){
+if ($tc == 'group' || $tc == 'supergroup'){
 $plus = mb_strlen("$textmassage");
 if($plus < 600) {
 botevoobot('sendmessage',[
@@ -156,7 +156,7 @@ else
 // lock channel 
 if($settings["information"]["lockchannel"] == "| فعال | ✅"){
 if ($status != "creator" && $status != "administrator" && !in_array($from_id,$Dev)){
-if ($tc == 'group' | $tc == 'supergroup'){
+if ($tc == 'group' || $tc == 'supergroup'){
 $usernamechannel = $settings["information"]["setchannel"];
 @$forchannel = json_decode(file_get_contents("https://api.telegram.org/bot".$token."/getChatMember?chat_id=".$usernamechannel."&user_id=".$from_id));
 @$tch = $forchannel->result->status;
@@ -227,7 +227,7 @@ file_put_contents("data/$chatid.json",$settings);
   }
 if($settings["information"]["step"] == "setchannel"){
 if ( $status == 'creator' or $status == 'administrator' or in_array($from_id,$Dev) ){
-if ($tc == 'group' | $tc == 'supergroup'){
+if ($tc == 'group' || $tc == 'supergroup'){
 if(strpos($textmassage , '@') !== false) {
 $plus = mb_strlen("$textmassage");
 if($plus < 25) {
@@ -294,7 +294,7 @@ botevoobot('sendmessage',[
 ]);
     }
 }
-elseif ($tc == 'group' | $tc == 'supergroup'){ 
+elseif ($tc == 'group' || $tc == 'supergroup'){ 
 if(in_array($from_id, $user["banlist"])) {
 		botevoobot('KickChatMember',[
     'chat_id'=>$chat_id,

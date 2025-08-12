@@ -32,7 +32,7 @@ else
 // sticker
 if ($settings["lock"]["sticker"] == "| فعال | ✅"){
 if($update->message->sticker){
-if ($tc == 'group' | $tc == 'supergroup'){
+if ($tc == 'group' || $tc == 'supergroup'){
 if ( $status != 'creator' && $status != 'administrator' && !in_array($from_id,$Dev) ){
 	botevoobot('deletemessage',[
     'chat_id'=>$chat_id,
@@ -44,8 +44,8 @@ if ( $status != 'creator' && $status != 'administrator' && !in_array($from_id,$D
 }
 // forward
 if ($settings["lock"]["forward"] == "| فعال | ✅"){
-if($update->message->forward_from | $update->message->forward_from_chat){
-if ($tc == 'group' | $tc == 'supergroup'){
+if($update->message->forward_from || $update->message->forward_from_chat){
+if ($tc == 'group' || $tc == 'supergroup'){
 if ( $status != 'creator' && $status != 'administrator' && !in_array($from_id,$Dev) ){
  botevoobot('deletemessage',[
     'chat_id'=>$chat_id,
@@ -58,7 +58,7 @@ if ( $status != 'creator' && $status != 'administrator' && !in_array($from_id,$D
 // fosh 
 if ($settings["lock"]["fosh"] == "| فعال | ✅"){
 if (strstr($textmassage,"کسده") == true  or strstr($textmassage,"جنده") == true or strstr($textmassage,"کیر") == true  or  strstr($textmassage,"سکسی") == true   or strstr($textmassage,"ناموس") == true) {
-if ($tc == 'group' | $tc == 'supergroup'){
+if ($tc == 'group' || $tc == 'supergroup'){
 if ( $status != 'creator' && $status != 'administrator' && !in_array($from_id,$Dev) ){
 	botevoobot('deletemessage',[
     'chat_id'=>$chat_id,
@@ -115,7 +115,7 @@ file_put_contents("data/$chat_id.json",$settings);
 // replay
 if ($settings["lock"]["reply"] == "| فعال | ✅"){
 if($update->message->reply_to_message){
-if ($tc == 'group' | $tc == 'supergroup'){
+if ($tc == 'group' || $tc == 'supergroup'){
 if ( $status != 'creator' && $status != 'administrator' && !in_array($from_id,$Dev) ){
  botevoobot('deletemessage',[
     'chat_id'=>$chat_id,
@@ -128,7 +128,7 @@ if ( $status != 'creator' && $status != 'administrator' && !in_array($from_id,$D
 // tg
 if ($settings["lock"]["tgservic"] == "| فعال | ✅"){
 if($update->message->new_chat_member | $update->message->new_chat_photo | $update->message->new_chat_title | $update->message->left_chat_member | $update->message->pinned_message){
-if ($tc == 'group' | $tc == 'supergroup'){
+if ($tc == 'group' || $tc == 'supergroup'){
  botevoobot('deletemessage',[
     'chat_id'=>$chat_id,
     'message_id'=>$message->message_id
@@ -139,7 +139,7 @@ if ($tc == 'group' | $tc == 'supergroup'){
 // text
 if ($settings["lock"]["text"] == "| فعال | ✅"){
 if($update->message->text){
-if ($tc == 'group' | $tc == 'supergroup'){
+if ($tc == 'group' || $tc == 'supergroup'){
 if ( $status != 'creator' && $status != 'administrator' && !in_array($from_id,$Dev) ){
  botevoobot('deletemessage',[
     'chat_id'=>$chat_id,
@@ -153,7 +153,7 @@ if ( $status != 'creator' && $status != 'administrator' && !in_array($from_id,$D
 // video note
 if ($settings["lock"]["video_msg"] == "| فعال | ✅"){
 if($update->message->video_note){
-if ($tc == 'group' | $tc == 'supergroup'){
+if ($tc == 'group' || $tc == 'supergroup'){
 if ( $status != 'creator' && $status != 'administrator' && !in_array($from_id,$Dev) ) {
  botevoobot('deletemessage',[
     'chat_id'=>$chat_id,
@@ -260,7 +260,7 @@ unlink("data/$from_id.txt");
  // left group when end charge
 date_default_timezone_set('Asia/Tehran');
 $date4 = date('Y-m-d', time());
-if ($tc == 'group' | $tc == 'supergroup'){ 
+if ($tc == 'group' || $tc == 'supergroup'){ 
 if($settings["information"]["expire"] != false){
 if($date4 > $settings["information"]["expire"]){
 			botevoobot('sendmessage',[
@@ -299,7 +299,7 @@ if($date4 > $settings["information"]["expire"]){
 if ($settings["information"]["welcome"] == "| فعال | ✅"){
 if($update->message->new_chat_member){
 if ($message->new_chat_member->is_bot == false){
-if ($tc == "group" | $tc == "supergroup"){
+if ($tc == "group" || $tc == "supergroup"){
 $text2 = $settings["information"]["textwelcome"];
 $newmemberuser = $update->message->new_chat_member->username;
 $text = str_replace("gpname","$namegroup","$text2");
@@ -333,7 +333,7 @@ $date1 = date("H:i");
 $timelockauto = $settings["information"]["timelock"];
 $unlocktime = $settings["information"]["timeunlock"];
 if($unlocktime > $date1 && $date1 > $timelockauto){
-if ($tc == 'group' | $tc == 'supergroup'){
+if ($tc == 'group' || $tc == 'supergroup'){
 if ( $status != 'creator' && $status != 'administrator' && !in_array($from_id,$Dev) ) {
 $timeremmber = $settings["information"]["timeremmber"];
 if($date1 < $timeremmber){
